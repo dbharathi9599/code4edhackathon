@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Automated Resume Relevance Check System</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .container { max-width: 600px; margin: auto; }
+        .result { margin-top: 20px; padding: 10px; background: #f0f0f0; border-radius: 4px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Automated Resume Relevance Check System</h2>
+    <form id="resumeForm">
+        <label>Upload Resume (Text or PDF):</label><br>
+        <input type="file" id="resumeFile" accept=".txt,.pdf" required><br><br>
+        <label>Paste Job Description:</label><br>
+        <textarea id="jobDesc" rows="6" cols="60" required></textarea><br><br>
+        <button type="submit">Check Relevance</button>
+    </form>
+    <div class="result" id="result"></div>
+</div>
+<script>
+document.getElementById('resumeForm').onsubmit = async function(e) {
+    e.preventDefault();
+    const file = document.getElementById('resumeFile').files[0];
+    const jobDesc = document.getElementById('jobDesc').value;
+    const formData = new FormData();
+    formData.append('resume', file);
+    formData.append('job_desc', jobDesc);
+
+    const res = await fetch('/check', {method: 'POST', body: formData});
+    const data = await res.json();
+    document.getElementById('result').innerHTML =
+        `<strong>Relevance Score:</strong> ${data.score}%<br>
+         <strong>Missing Keywords:</strong> ${data.missing.join(', ') || 'None'}<br>
+         <strong>Message:</strong> ${data.message}`;
+};
+</script>
+</body>
+</html>
